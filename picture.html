@@ -1,95 +1,218 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>写真ギャラリー</title>
-     <link rel="stylesheet" href="picture.css" />
-     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.5/css/lightbox.css" 
-     integrity="sha512-DKdRaC0QGJ/kjx0U0TtJNCamKnN4l+wsMdION3GG0WVK6hIoJ1UPHRHeXNiGsXdrmq19JJxgIubb/Z7Og2qJww==" 
-     crossorigin="anonymous" 
-     referrerpolicy="no-referrer" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>写真ギャラリー</title>
+
+  <!-- あなたのCSS -->
+  <link rel="stylesheet" href="picture.css" />
+
+  <!-- Lightbox2 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.5/css/lightbox.css"
+    integrity="sha512-DKdRaC0QGJ/kjx0U0TtJNCamKnN4l+wsMdION3GG0WVK6hIoJ1UPHRHeXNiGsXdrmq19JJxgIubb/Z7Og2qJww=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
-   <header class="site-header">
+  <header class="site-header">
     <h1>あみもの記録</h1>
+    <div class="controls">
+      <input id="search" type="search" placeholder="作品名・タグで検索" aria-label="検索" />
+      <button id="addBtn" class="btn">＋ 作品を追加</button>
+      <button id="exportBtn" class="btn">JSONを書き出し</button>
+      <button id="clearBtn" class="btn btn--ghost" title="この端末の一時保存データを削除">端末の一時データ消去</button>
+      <span id="count" class="muted"></span>
+    </div>
   </header>
-      
 
-  <div class="gallery">
-    <a href="images/tie.jpg" target="_blank"
-    data-lightbox="knit"
-    data-title="ネクタイ">
-      <img src="images/tie.jpg" alt="ネクタイ" >
-    </a>
+  <main>
+    <div class="gallery" id="grid" aria-live="polite"></div>
+    <p id="emptyState" class="empty" hidden>🫖 一致する作品がありません。検索語を短くするか、タグを変えてみてね。</p>
+  </main>
 
-    <a href="images/bag.jpg" target="_blank"
-    data-lightbox="knit"
-    data-title="ナップサック">
-      <img src="images/bag.jpg" alt="ナップサック" >
-    </a>
-    <a href="images/cathat.jpg" target="_blank"
-    data-lightbox="knit"
-    data-title="猫耳帽子">
-      <img src="images/cathat.jpg" alt="猫耳帽子" >
-    </a>
-    <a href="images/headdress.jpg" target="_blank"
-    data-lightbox="knit"
-    data-title="ヘッドドレス">
-      <img src="images/headdress.jpg" alt="ヘッドドレス" >
-    </a>
-    <a href="images/kitty.jpg" target="_blank"
-    data-lightbox="knit"
-    data-title="キティちゃんポーチ">
-      <img src="images/kitty.jpg" alt="キティちゃんポーチ" >
-    </a>
-    <a href="images/knithat.jpg" target="_blank"
-    data-lightbox="knit"
-    data-title="ボンネット帽">
-      <img src="images/knithat.jpg" alt="ボンネット帽" >
-    </a>
-    <a href="images/miffy.jpg" target="_blank"
-    data-lightbox="knit"
-    data-title="ミッフィー">
-      <img src="images/miffy.jpg" alt="ミッフィー" >
-    </a>
-    <a href="images/pencase.jpg" target="_blank"
-    data-lightbox="knit"
-    data-title="ペンライトケース">
-      <img src="images/pencase.jpg" alt="ペンライトケース" >
-    </a>
-    <a href="images/penpouch.jpg" target="_blank"
-    data-lightbox="knit"
-    data-title="ペンポーチ">
-      <img src="images/penpouch.jpg" alt="ペンポーチ" >
-    </a>
-    
-    <a href="images/teruteru.jpg" target="_blank"
-    data-lightbox="knit"
-    data-title="てるてる坊主">
-      <img src="images/teruteru.jpg" alt="てるてる坊主" >
-    </a>
+  <button id="toTop" aria-label="トップへ">⬆︎</button>
 
-    <a href="images/whitebag.jpg" target="_blank"
-    data-lightbox="knit"
-    data-title="お花のポーチ">
-      <img src="images/whitebag.jpg" alt="お花のポーチ" >
-    </a>
-<a href="images/snoopy.jpeg" target="_blank"
-    data-lightbox="knit"
-    data-title="スヌーピーのあみぐるみ">
-      <img src="images/snoopy.jpeg" alt="スヌーピー" >
-    </a>
-
-  </div>
+  <!-- jQuery & Lightbox2 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
-   integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
-   crossorigin="anonymous" 
-   referrerpolicy="no-referrer"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.5/js/lightbox.min.js" 
-  integrity="sha512-KbRFbjA5bwNan6DvPl1ODUolvTTZ/vckssnFhka5cG80JVa5zSlRPCr055xSgU/q6oMIGhZWLhcbgIC0fyw3RQ==" 
-  crossorigin="anonymous" 
-  referrerpolicy="no-referrer"></script>
-</body>
+    integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.5/js/lightbox.min.js"
+    integrity="sha512-KbRFbjA5bwNan6DvPl1ODUolvTTZ/vckssnFhka5cG80JVa5zSlRPCr055xSgU/q6oMIGhZWLhcbgIC0fyw3RQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
+  <!-- 作品データ（GitHub公開用の元データ）-->
+  <script src="works.js"></script>
+
+  <!-- アプリ本体 -->
+  <script>
+  ;(() => {
+    const saveKey = 'knit-works';         // localStorage キー
+    const grid = document.getElementById('grid');
+    const search = document.getElementById('search');
+    const emptyState = document.getElementById('emptyState');
+    const count = document.getElementById('count');
+
+    // 1) データ読み込み：works.js → 端末保存（あれば上書き）
+    /** @type {{id?:string,title:string,date?:string,yarn?:string,needle?:string,hours?:number,tags?:string[],img:string,alt?:string}[]} */
+    let works = Array.isArray(window.WORKS) ? structuredClone(window.WORKS) : [];
+    ensureIds(works);
+
+    const saved = localStorage.getItem(saveKey);
+    if (saved) {
+      try {
+        const local = JSON.parse(saved);
+        if (Array.isArray(local)) {
+          // 端末保存が優先（編集中の最新状態）
+          works = local;
+          ensureIds(works);
+        }
+      } catch (_) {}
+    }
+
+    // 2) レンダリング
+    function render(list = works) {
+      const query = search.value.trim().toLowerCase();
+      const filtered = list.filter(w => {
+        if (!query) return true;
+        const hay = [
+          w.title, w.date, w.yarn, w.needle,
+          (w.hours ?? '') + '',
+          (w.tags || []).join(' ')
+        ].join(' ').toLowerCase();
+        return hay.includes(query);
+      });
+
+      grid.innerHTML = filtered.map(w => `
+        <figure class="card" id="${w.id}" data-tags="${(w.tags||[]).join(' ')}">
+          <a href="${w.img}" data-lightbox="knit"
+             data-title="${escapeHtml(`${w.title || ''}｜${w.date || ''}｜糸:${w.yarn || ''}｜針:${w.needle || ''}｜${w.hours ?? '-'}h`)}">
+            <img class="thumb"
+                 src="${w.img}"
+                 alt="${escapeHtml(w.alt || w.title || '')}"
+                 loading="lazy" decoding="async" />
+          </a>
+          <figcaption class="cap">
+            <b class="ttl">${escapeHtml(w.title || '')}</b>
+            <span class="meta">
+              ${w.date ? `📅 ${escapeHtml(w.date)} / ` : ''}
+              ⏱️ ${w.hours ?? '-'}h
+              ${w.tags?.length ? ' / ' + w.tags.slice(0, 3).map(t => `#${escapeHtml(t)}`).join(' ') : ''}
+            </span>
+          </figcaption>
+        </figure>
+      `).join('');
+
+      emptyState.hidden = filtered.length > 0;
+      count.textContent = `${filtered.length} / ${works.length} 件`;
+      // Lightbox再初期化（新規要素にも効かせる）
+      if (window.lightbox?.init) lightbox.init();
+    }
+
+    // 3) 検索イベント
+    search.addEventListener('input', () => {
+      render();
+      saveState();
+    });
+
+    // 4) 作品追加（prompt + ファイル選択）
+    document.getElementById('addBtn').addEventListener('click', async () => {
+      const title = prompt('作品名（例：猫耳帽子）');
+      if (!title) return;
+
+      const date = prompt('日付（YYYY-MM-DD）', new Date().toISOString().slice(0,10)) || '';
+      const yarn = prompt('糸（例：コットン並太、任意）') || '';
+      const needle = prompt('針（例：4号、任意）') || '';
+      const hours = parseFloat(prompt('所要時間（h、任意）') || '') || '';
+      const tags = (prompt('タグ（スペース区切り、任意）') || '').split(/\s+/).filter(Boolean);
+
+      const input = Object.assign(document.createElement('input'), { type: 'file', accept: 'image/*' });
+      input.click();
+      input.onchange = async () => {
+        const file = input.files?.[0];
+        if (!file) return;
+        const dataUrl = await fileToDataURL(file); // 端末内プレビュー用（公開前は差し替える）
+        const id = 'w_' + Math.random().toString(36).slice(2, 9);
+
+        const item = { id, title, date, yarn, needle, hours, tags, img: dataUrl, alt: title };
+        works.unshift(item);
+        saveState();
+        render();
+
+        alert('追加しました！\n※この端末内に保存しました（公開版には未反映）\n公開するには「JSONを書き出し」でworks.jsを出力し、画像をimages/にアップしてください。');
+        // トップへ戻す（新規が先頭に来るため）
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+    });
+
+    // 5) JSON書き出し（DataURL → ファイル名に置換してエクスポート）
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      // 例: images/neko-mimi-2025-10-10-1.jpg のように命名
+      const exported = works.map((w, i) => {
+        const base = slugify((w.title || 'work') + '-' + (w.date || 'xxxx-xx-xx'));
+        const fname = `${base}-${String(i + 1).padStart(2, '0')}.jpg`;
+        const img = w.img?.startsWith?.('data:') ? `images/${fname}` : w.img;
+        return { ...w, img };
+      });
+
+      // window.WORKS=… 形式で保存（そのまま works.js として置ける）
+      const text = `window.WORKS=${JSON.stringify(exported, null, 2)};`;
+      const blob = new Blob([text], { type: 'application/javascript' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'works.js';
+      a.click();
+      URL.revokeObjectURL(a.href);
+
+      alert('works.js を書き出しました！\n1) 画像ファイルを images/ にアップ\n2) この works.js をリポジトリに上書き\n→ GitHub Pages に反映されます。');
+    });
+
+    // 6) 端末の一時データ削除（やり直したい時）
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      const ok = confirm('この端末に保存されている仮データを削除します。公開済みのデータ（works.js）は消えません。よろしいですか？');
+      if (!ok) return;
+      localStorage.removeItem(saveKey);
+      // 公開版（works.js）を再読込
+      works = Array.isArray(window.WORKS) ? structuredClone(window.WORKS) : [];
+      ensureIds(works);
+      search.value = '';
+      render();
+      alert('端末の一時データを消去しました。');
+    });
+
+    // 保存・復元
+    function saveState() {
+      localStorage.setItem(saveKey, JSON.stringify(works));
+    }
+
+    // Helpers
+    function ensureIds(arr) {
+      arr.forEach(w => { if (!w.id) w.id = 'w_' + Math.random().toString(36).slice(2, 9); });
+    }
+    function fileToDataURL(file) {
+      return new Promise(res => {
+        const r = new FileReader();
+        r.onload = () => res(r.result);
+        r.readAsDataURL(file);
+      });
+    }
+    function slugify(s) {
+      return String(s).toLowerCase()
+        .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')  // 濁点・アクセント除去
+        .replace(/[^\w\-]+/g, '-')                          // 非単語→ハイフン
+        .replace(/-{2,}/g, '-').replace(/^-+|-+$/g, '');
+    }
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    // トップへボタン
+    const toTop = document.getElementById('toTop');
+    toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    // 初期描画
+    lightbox.option({ fadeDuration: 200, resizeDuration: 200, wrapAround: true, albumLabel: "%1 / %2" });
+    render();
+  })();
+  </script>
+</body>
 </html>
